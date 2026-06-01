@@ -11,7 +11,9 @@ const Authors = (props) => {
   const [born, setBorn] = useState('')
 
   const [editAuthor] = useMutation(props.EDIT_AUTHOR, {
-    refetchQueries: [{query: props.ALL_AUTHORS}],
+    onError: (error) => props.notify(error.message),
+    refetchQueries: [{ query: props.ALL_AUTHORS }],
+    awaitRefetchQueries: true
   })
 
   const submit = async (event) => {
@@ -42,11 +44,14 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <h2>Set birth year</h2>
+      {props.token &&
+      <>
+      <h2>Set birthyear</h2>
       <form onSubmit={submit}>
         <label>
           name
           <select
+            name="name"
             value={authName}
             onChange={({ target }) => setAuthName(target.value)}
           >
@@ -69,6 +74,8 @@ const Authors = (props) => {
         <br/>
         <button type="submit">update author</button>
       </form>
+      </>
+      }
     </div>
   )
 }

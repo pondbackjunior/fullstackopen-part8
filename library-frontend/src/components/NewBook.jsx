@@ -9,7 +9,12 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [createBook] = useMutation(props.CREATE_BOOK, {
-    refetchQueries: [{query: props.ALL_BOOKS}],
+    onError: (error) => props.notify(error.message),
+    onCompleted: (data) => {
+      props.notify('Book added successfully')
+    },
+    refetchQueries: [{ query: props.ALL_BOOKS }],
+    awaitRefetchQueries: true
   })
 
   if (!props.show) {
@@ -18,6 +23,11 @@ const NewBook = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
+
+    if (!title || !author || !published || genres.length === 0) {
+      props.notify('All fields including at least one genre are required')
+      return
+    }
 
     createBook({variables: {title, author, published: parseInt(published), genres}})
 
